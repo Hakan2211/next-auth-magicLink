@@ -25,6 +25,18 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
+import resend from '@lib/resendClient';
+import { supabase } from '@lib/supabaseClient';
+
+async function sendMagicLink(email: string, magicLink: string) {
+  await resend.emails.send({
+    from: 'your@domain.com',
+    to: email,
+    subject: 'Your Magic Link',
+    html: `<a href="${magicLink}">Login with this magic link</a>`,
+  });
+}
+
 interface MagicLinkFormProps {
   mode: 'login' | 'enroll';
   onSubmit: (email: string) => Promise<void>;
@@ -48,7 +60,18 @@ export default function Authwrapper({ mode, onSubmit }: MagicLinkFormProps) {
     setIsLoading(true);
     setError(null);
     setSuccess(false);
-    console.log(data);
+
+    // generate a link onSibmit
+    async function handleLogin(email: string) {
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          redirectTo: 'your-app-url/redirect-path', // Adjust accordingly
+        },
+      });
+
+      if (error) throw new Error('Error sending magic link');
+    }
 
     try {
       await onSubmit(data.email);
@@ -60,7 +83,8 @@ export default function Authwrapper({ mode, onSubmit }: MagicLinkFormProps) {
     }
   };
 
-  const buttonText = mode === 'login' ? 'Send Magic Link' : 'Enroll';
+  const buttonText =
+    mode === 'login' ? 'Send Magic Link' : 'Proceed to Payment';
   const titleText =
     mode === 'login' ? 'Log in to your account' : 'Enroll to the course';
   const descriptionText =

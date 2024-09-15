@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import Authlinks from '@/components/auth/authLinks';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -39,12 +40,7 @@ export default function RootLayout({
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button>
-                <Link href="/enroll">Enroll</Link>
-              </Button>
+              <Authlinks />
             </div>
           </header>
 
