@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -24,32 +24,21 @@ import {
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-
-// import { supabase } from '@lib/supabaseClient';
-// import resend from '@lib/resendClient';
-
-// async function sendMagicLink(email: string, magicLink: string) {
-//   await resend.emails.send({
-//     from: 'your@domain.com',
-//     to: email,
-//     subject: 'Your Magic Link',
-//     html: `<a href="${magicLink}">Login with this magic link</a>`,
-//   });
-// }
+import { sendMagicLink } from './actions/sendMagicLink';
 
 interface MagicLinkFormProps {
   mode: 'login' | 'enroll';
-  onSubmit: (email: string) => Promise<void>;
 }
 
 const emailSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
 });
 
-export default function Authwrapper({ mode, onSubmit }: MagicLinkFormProps) {
+export default function Authwrapper({ mode }: MagicLinkFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm({
     resolver: zodResolver(emailSchema),
@@ -61,26 +50,26 @@ export default function Authwrapper({ mode, onSubmit }: MagicLinkFormProps) {
     setError(null);
     setSuccess(false);
 
-    // generate a link onSubmit
-    async function handleLogin(email: string) {
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          redirectTo: 'your-app-url/redirect-path', // Adjust accordingly
-        },
-      });
+    startTransition(async () => {
+      try {
+        const result = await sendMagicLink({ email: data.email, mode });
 
-      if (error) throw new Error('Error sending magic link');
-    }
-
-    try {
-      await onSubmit(data.email);
-      setSuccess(true);
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+        if (result.success) {
+          setSuccess(true);
+        } else {
+          setError(
+            'An error occurred while sending the magic link. Please try again.'
+          );
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setError(
+          'An error occurred while sending the magic link. Please try again.'
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    });
   };
 
   const buttonText =

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+
 import Authlinks from '@/components/auth/authLinks';
 
 const geistSans = localFont({
@@ -10,11 +10,11 @@ const geistSans = localFont({
   variable: '--font-geist-sans',
   weight: '100 900',
 });
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-});
+// const geistMono = localFont({
+//   src: './fonts/GeistMonoVF.woff',
+//   variable: '--font-geist-mono',
+//   weight: '100 900',
+// });
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -23,14 +23,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body>
         <div className="min-h-screen grid grid-rows-[auto,1fr,auto]">
           {/* Header */}
           <header className="bg-primary text-primary-foreground h-16 px-4 flex items-center justify-between">
