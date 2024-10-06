@@ -17,7 +17,7 @@ export async function sendMagicLink({ email, mode }: MagicLinkParams) {
         type: 'magiclink',
         email,
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}`, // Adjust accordingly
+          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}`,
         },
       });
 
@@ -37,20 +37,19 @@ export async function sendMagicLink({ email, mode }: MagicLinkParams) {
       const htmlMessage =
         mode === 'login'
           ? `<p>Click the link below to log in to your account:</p><a href="${actionLink}">Login with this magic link</a>`
-          : `<p>Thank you for enrolling! Click the link below to confirm your enrollment:</p><a href="${actionLink}">Confirm Enrollment with this magic link</a>`;
+          : `<p>Thank you for enrolling! Click the link below to confirm your enrollment:</p><a href="${actionLink}/course">Confirm Enrollment with this magic link</a>`;
 
       if (resend) {
         await resend.emails.send({
-          from: 'no-reply@hakanda.com',
+          from: 'Hakan@hakanda.com',
           to: email,
           subject: subject,
           html: htmlMessage,
         });
+        return { success: true };
       } else {
         throw new Error('Resend client is not initialized');
       }
-
-      return { success: true };
     } else {
       throw new Error('Magic link could not be generated');
     }

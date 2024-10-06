@@ -35,7 +35,7 @@ export default function Authlinks() {
               You will get a link to your email for loggin in.
             </DialogDescription>
           </DialogHeader>
-          <Authwrapper mode="login" />
+          <Authwrapper mode="login" onClose={() => setLoginOpen(false)} />
         </DialogContent>
       </Dialog>
 
@@ -48,7 +48,7 @@ export default function Authlinks() {
               Enroll and buy and get access to the course.
             </DialogDescription>
           </DialogHeader>
-          <Authwrapper mode="enroll" />
+          <Authwrapper mode="enroll" onClose={() => setEnrollOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>

@@ -12,6 +12,9 @@ export default function Home() {
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua.
       </p>
+      <Link href={'/course'}>
+        <Button>Course</Button>
+      </Link>
     </main>
   );
 }
