@@ -77,36 +77,16 @@ export default function Authwrapper({ mode, onClose }: MagicLinkFormProps) {
         if (userResponse.status === 'existsPaid') {
           if (mode === 'enroll') {
             // User already enrolled and paid, redirect to login
+            setError('You are already enrolled. Please log in.');
+            onClose(); // Close the dialog before redirecting
             router.push('/login'); // Redirect to login page
             setIsLoading(false);
             return;
           } else if (mode === 'login') {
             // User exists and paid, send magic link for login
             try {
-              await sendMagicLink({ email: data.email, mode });
+              await sendMagicLink({ email: data.email, mode: 'login' });
               setSuccess(true);
-              // const {
-              //   data: { session },
-              //   error: sessionError,
-              // } = await supabasePublic.auth.getSession();
-              // if (sessionError || !session) {
-              //   console.error('Error fetching session:', sessionError?.message);
-              //   setError(
-              //     'An error occurred while fetching session. Please try again.'
-              //   );
-              //   setIsLoading(false);
-              //   return;
-              // }
-              // const cookieResult = await setSessionCookie(session.access_token);
-              // if (cookieResult.success) {
-
-              //   router.push('/course');
-              // } else {
-              //   console.error('Failed to set session cookie');
-              //   setError(
-              //     'An error occurred while setting up your session. Please try again.'
-              //   );
-              // }
             } catch (err) {
               console.error('Error sending magic link:', err);
               setError(
@@ -121,6 +101,7 @@ export default function Authwrapper({ mode, onClose }: MagicLinkFormProps) {
           setError(
             'You need to enroll and complete payment before logging in.'
           );
+          onClose(); // Close the dialog before redirecting
           router.push('/enroll'); // Redirect to enroll page to complete enrollment
           setIsLoading(false);
           return;
@@ -131,7 +112,7 @@ export default function Authwrapper({ mode, onClose }: MagicLinkFormProps) {
 
             // Redirect user after successful enrollment
             try {
-              await sendMagicLink({ email: data.email, mode });
+              await sendMagicLink({ email: data.email, mode: 'enroll' });
               setSuccess(true);
               setError(null);
               // Redirect user after successful enrollment
